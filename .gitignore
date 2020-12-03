@@ -1,0 +1,4 @@
+libs/*.jar
+.idea/
+.gradle/
+out/
