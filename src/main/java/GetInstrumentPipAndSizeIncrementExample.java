@@ -1,4 +1,4 @@
-import com.bookmap.connectivitylib.ConnectivityClient;
+import com.bookmap.exchangeport.ConnectivityClient;
 import velox.api.layer1.Layer1ApiProvider;
 import velox.api.layer1.data.DefaultAndList;
 import velox.api.layer1.data.SubscribeInfoCrypto;
