@@ -1,10 +1,12 @@
-# ExchangePort example
+# ExchangePort documentation & code examples
 
 The ExchangePort library provides programmatic access to a multitude of exchanges, using a singular interface. The aim 
 of the library is to lift developer's / quant's burden of doing the infrastructure work and make it possible to 
 focus purely on the trading strategy.
 
 Get the library now at [ExchangePort - Bookmap Marketplace](https://marketplace.bookmap.com/product/exchangeport/).
+
+How to use the library? See [Usage](#Usage) below, and code examples in [src/main/java](src/main/java).
 
 ![ExchangePort logo](logo.png "ExchangePort Logo")
 
@@ -26,6 +28,8 @@ All currently available exchanges:
 - `poloniex`
 
 This repository shows how to use the library.
+
+# Usage
 
 ## Setup
 
@@ -68,7 +72,7 @@ dependencies {
 
 ## Quick start
 
-Find the `*Example.java` files in this repository showing usage in several differnt ways.
+Find the `*Example.java` files in this repository showing usage in several ways.
 
 Also, here's a short recap:
 
