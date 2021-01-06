@@ -108,7 +108,7 @@ public class TradingExample {
 
                 @Override
                 public void onStatus(StatusInfo statusInfo) {
-                    // Called when the account status - frequency depends on the exchange.
+                    // Called when the account status changes - frequency depends on the exchange.
                     System.out.println(statusInfo);
                 }
 
