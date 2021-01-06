@@ -1,3 +1,5 @@
+package com.bookmap.exchangeportexamples;
+
 public class Settings {
 
     public static final String EXCHANGEPORT_TOKEN = "PLACE_YOUR_TOKEN_HERE";

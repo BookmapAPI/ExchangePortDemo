@@ -1,15 +1,23 @@
+package com.bookmap.exchangeportexamples;
+
 import com.bookmap.exchangeport.ConnectivityClient;
 import java.util.HashMap;
 import java.util.Map;
 import velox.api.layer1.Layer1ApiDataListener;
 import velox.api.layer1.Layer1ApiProvider;
-import velox.api.layer1.data.*;
+import velox.api.layer1.data.MarketMode;
+import velox.api.layer1.data.SubscribeInfo;
+import velox.api.layer1.data.SubscribeInfoCrypto;
+import velox.api.layer1.data.TradeInfo;
 
-public class MarketDataMultipleExchangesExample {
+/**
+ * This example demonstrates how to connect to a single exchange and get its market data (order book and trades).
+ */
+public class MarketDataSingleExchangeExample {
 
     private final ConnectivityClient client;
 
-    public MarketDataMultipleExchangesExample() {
+    public MarketDataSingleExchangeExample() {
         client = new ConnectivityClient(Settings.EXCHANGEPORT_TOKEN);
     }
 
@@ -17,58 +25,44 @@ public class MarketDataMultipleExchangesExample {
         // Construct your chosen provider(s) (which is an abstraction of the exchange you want to connect to).
         // You may construct multiple various providers and use the same or different listeners
         // to listen to the data (see below).
-        Layer1ApiProvider krakenFuturesProvider = client.krakenFutures(false);
         // Binance Futures API enables you to select the frequency of order book updates. At the time of this writing,
         // "100 milliseconds" is the highest available frequency (where order book updates are most frequent).
         Layer1ApiProvider binanceFuturesProvider = client.binanceFutures(false, "100 milliseconds");
 
-        System.out.println("Available symbols in Kraken Futures:");
-        printAvailableSymbols(krakenFuturesProvider);
-
         System.out.println("Available symbols in Binance Futures:");
         printAvailableSymbols(binanceFuturesProvider);
-
-        // Let's say we are interested in the ETH / USD perpetual future instruments from these two exchanges. First,
-        // we find the names: PI_ETHUSD on Kraken Futures, and ETHUSD_PERP on Binance Futures.
 
         // First, we must specify the pip and the size increment to which the data is going to be rounded.
         // (pip = price increment)
         //
         // The chosen values must be at least the minimum available exchange pip / size instrument
         // for the specified instrument.
-        // For example: if BTCUSDT on Binance Futures has a minimum pip of 0.001, you can select 0.01 to
-        // make all prices be rounded to 0.01, like it's done below.
-
-        Map<String, Double> selectedPipAtKrakenFutures = new HashMap<String, Double>() {
-            {
-                put("PI_ETHUSD", 0.1);
-            }
-        };
-        Map<String, Double> selectedSizeIncrementAtKrakenFutures = new HashMap<String, Double>() {
-            {
-                put("PI_ETHUSD", 0.001);
-            }
-        };
+        // For example: if BTCUSD_PERP on Binance Futures has a minimum pip of 0.001, you can select 0.01 to
+        // make all prices be rounded to 0.01.
 
         Map<String, Double> selectedPipAtBinanceFutures = new HashMap<String, Double>() {
             {
-                put("ETHUSD_PERP", 0.1);
+                put("BTCUSD_PERP", 0.1);
+                put("ETHUSD_PERP", 0.01);
             }
         };
         Map<String, Double> selectedSizeIncrementAtBinanceFutures = new HashMap<String, Double>() {
             {
-                put("ETHUSD_PERP", 0.001);
+                put("BTCUSD_PERP", 0.001);
+                put("ETHUSD_PERP", 0.01);
             }
         };
 
-        // Subscribe to the two instruments. After that, order book and trade data will start arriving.
-        krakenFuturesProvider.subscribe(
+        // Subscribe to the instrument. After that, order book and trade data will start arriving.
+        // Note: See the ConnectionAndInstrumentStatusExample to see how to subscribe to listeners informing you of
+        //       whether the subscription has been successful or not.
+        binanceFuturesProvider.subscribe(
             new SubscribeInfoCrypto(
-                "PI_ETHUSD",
+                "BTCUSD_PERP",
                 null,
                 null,
-                selectedPipAtKrakenFutures.get("PI_ETHUSD"),
-                1 / selectedSizeIncrementAtKrakenFutures.get("PI_ETHUSD")
+                selectedPipAtBinanceFutures.get("BTCUSD_PERP"),
+                1 / selectedSizeIncrementAtBinanceFutures.get("BTCUSD_PERP")
             )
         );
         binanceFuturesProvider.subscribe(
@@ -81,42 +75,7 @@ public class MarketDataMultipleExchangesExample {
             )
         );
 
-        // It's possible ot use the same listener for multiple providers. But the problem would occur when the alias
-        // name is the same for multiple exchanges - meaning you wouldn't be able to know from which exchange the
-        // event came from. That's why, below, two separate listeners are used (but you could safely use the same
-        // listener here since the names PI_ETHUSD and ETHUSD_PERP aren't the same).
-
-        krakenFuturesProvider.addListener(
-            new Layer1ApiDataListener() {
-                @Override
-                public void onTrade(String alias, double priceLevel, int sizeLevel, TradeInfo tradeInfo) {
-                    String buyOrSell = tradeInfo.isBidAggressor ? "BUY" : "SELL";
-                    double price = priceLevel * selectedPipAtKrakenFutures.get(alias);
-                    double size = sizeLevel * selectedSizeIncrementAtKrakenFutures.get(alias);
-                    System.out.printf(
-                        "onTrade: alias=%s buyOrSellAggressor=%s price=%s size=%s%n",
-                        alias,
-                        buyOrSell,
-                        price,
-                        size
-                    );
-                }
-
-                @Override
-                public void onDepth(String alias, boolean isBid, int priceLevel, int sizeLevel) {
-                    String side = isBid ? "BID" : "ASK";
-                    double price = priceLevel * selectedPipAtKrakenFutures.get(alias);
-                    double size = sizeLevel * selectedSizeIncrementAtKrakenFutures.get(alias);
-                    System.out.printf("onDepth: alias=%s side=%s price=%s size=%s %n", alias, side, price, size);
-                }
-
-                @Override
-                public void onMarketMode(String s, MarketMode marketMode) {
-                    // Not used in blockchain exchanges.
-                }
-            }
-        );
-
+        // These methods get called e.g. when a trade happens, or an order book is changed.
         binanceFuturesProvider.addListener(
             new Layer1ApiDataListener() {
                 @Override
@@ -164,6 +123,6 @@ public class MarketDataMultipleExchangesExample {
     }
 
     public static void main(String[] args) {
-        new MarketDataMultipleExchangesExample().run();
+        new MarketDataSingleExchangeExample().run();
     }
 }

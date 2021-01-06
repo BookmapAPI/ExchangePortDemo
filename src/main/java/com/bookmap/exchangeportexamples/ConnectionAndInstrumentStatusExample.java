@@ -1,3 +1,5 @@
+package com.bookmap.exchangeportexamples;
+
 import com.bookmap.exchangeport.ConnectivityClient;
 import java.util.HashMap;
 import java.util.Map;
