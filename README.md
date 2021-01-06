@@ -405,9 +405,9 @@ provider.sendOrder(
 ```java
 provider.updateOrder(
     new OrderMoveParameters(
-        orderId,    // The order ID.
-        Double.NaN, // The new stop price.
-        limitPrice  // The new limit price.
+        orderId,      // The order ID.
+        Double.NaN,   // The new stop price. Set it to Double.NaN if the order's type is not STP or STP_LMT.
+        newLimitPrice // The new limit price. Set it to Double.NaN if the order's type is not LMT or STP_LMT.
     )
 );
 ```
