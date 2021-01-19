@@ -311,13 +311,27 @@ provider.addListener(
 
         @Override
         public void onStatus(StatusInfo statusInfo) {
-            // Called when the account status changes - frequency depends on the exchange.
+            // Called when instrument status changes in some way - frequency depends on the exchange, but it usually 
+            // immediately follows the change taking place.
+            // `statusInfo` contains the following data:
+            // - alias
+            // - instrument's P&L, realized and unrealized (not available with every exchange)
+            // - position
+            // - average entry price
+            // - volume
+            // - working number of buys (summed buy order sizes)
+            // - working number of sells (summed sell order sizes)
             System.out.println(statusInfo);
         }
 
         @Override
         public void onBalance(BalanceInfo balanceInfo) {
             // Called when the balance changes - frequency depends on the exchange.
+            // `balanceInfo` contains the following data:
+            // - balance
+            // - total P&L, realized and unrealized (not available with every exchange)
+            // - currency
+            // - rate to base - this is usually the ratio to USD, used to easily sum balances in different currencies
             System.out.println(balanceInfo);
         }
     }
