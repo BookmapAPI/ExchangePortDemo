@@ -1,5 +1,7 @@
 # ExchangePort documentation & code examples
 
+**Note: This project has been deprecated and is not accessible to users.**
+
 ExchangePort is a Java library that provides programmatic access to a multitude of exchanges, using a singular
 interface. The aim of the library is to lift developer's / quant's burden of doing the infrastructure work and make it
 possible to focus purely on the trading strategy.
